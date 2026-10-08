@@ -213,6 +213,9 @@
     <ClCompile Include="SkillObserber.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LogBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -927,6 +930,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SkillObserber.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LogBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="State.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
