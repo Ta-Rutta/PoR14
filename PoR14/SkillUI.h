@@ -1,37 +1,56 @@
 ﻿#pragma once
-#include "SkillType.cpp"
+#include "SkillID.h"
 
-class OneSkillUI
+class SkillUI
 {
 private:
-	double IconSize = 30;
+	double IconSize = 60;
 
 public:
 	SkillType type;
 	Texture skillIcon;
 	Vec2 pos;
 	RectF body;
-	OneSkillUI(SkillType type, Texture skillIcon, Vec2 pos)
+	
+	SkillUI(SkillType type, Texture skillIcon, Vec2 pos)
 		:type(type), skillIcon(skillIcon), pos(pos)
 	{
 		body = RectF{ pos,IconSize };
 	}
 };
 
-class SkillUI
+class SkillUIRegister
 {
 public:
-	Array<OneSkillUI> skillUIs;
+	Array<SkillUI> skillUIs;
+
+	SkillUIRegister()
+	{
+		skillUIs.push_back(SkillUI{ SkillType::Attack,Texture{U"Assets/2026LOGO.png"},Vec2{500,600} });
+		skillUIs.push_back(SkillUI{ SkillType::Attack2,Texture{U"Assets/ramen.jpg"},Vec2{570,600} });
+	}
+
+	Array<SkillUI> releaseSkillUIs()
+	{
+		return std::move(skillUIs);
+	}
+};
+
+class SkillUIManager
+{
+public:
+	Array<SkillUI> skillUIs;
 
 private:	
 
 	void addSkillUI()
 	{
-		skillUIs.push_back(OneSkillUI{ SkillType::Attack,Texture{U"Assets/baria.bmp"},Vec2{500,600} });
+		skillUIs.push_back(SkillUI{ SkillType::Attack,Texture{U"Assets/2026LOGO.png"},Vec2{500,600} });
+		skillUIs.push_back(SkillUI{ SkillType::Attack2,Texture{U"Assets/ramen.jpg"},Vec2{570,600} });
 	}
 
 public:
-	SkillUI()
+	SkillUIManager()
 	{
 		addSkillUI();
 	}	

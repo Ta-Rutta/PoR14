@@ -4,7 +4,7 @@
 class UIManager
 {
 public:
-	SkillUI skillUI;
+	SkillUIManager skillUI;
 
 	SkillType checkClicked()
 	{
@@ -17,4 +17,3 @@ public:
 	}
 	
 };
-

@@ -1,12 +1,10 @@
 ﻿# include <Siv3D.hpp> // Siv3D v0.6.14
 # include "effect.h"
-# include "PlayerUi.h"
-# include "Skill.h"
+# include "SkillManager.h"
 # include "common.cpp"
 # include "anime.h"
 # include "practice.h"
 # include "Talk.h"
-# include "Buff.h"
 #include "UIManager.h"
 
 //using App = SceneManager<String>;//using=省略
@@ -294,79 +292,7 @@ public:
 		{
 			entity->draw();
 		}
-
-
-	}
-
-	
-};
-
-
-
-class SkillRegister
-{
-public:
-
-	static Array<Skill> GetNearSkills() {
-		return {
-			{ U"近接コンボa ", SkillType::Attack, U"null",U"GCD", 10,20, 1, 0},
-			{ U"近接コンボb ", SkillType::Attack, U"a",U"GCD", 10,20, 1, 0},
-			{ U"近接コンボc ", SkillType::Attack, U"b",U"GCD", 10,20, 1, 0},
-		};
-	}
-
-	static Array<Skill> GetHealSkills() {
-		return {
-			{ U"ヒール1", SkillType::Heal, U"null",U"", 10,20, 1, 0 }
-		};
-	}
-	
-};
-
-class PlayerAct
-{
-public:
-
-	
-
-};
-
-class SkillManager
-{
-private:
-	double gcdTimer = 0;
-	const double GCD_TIME = 1.8;
-	String activeComboID = U"";    // 現在有効なコンボ起点スキルID
-	double comboTimer = 0.0;       // コンボ受付の残り時間
-	const double COMBO_LIMIT = 15.0; // コンボ受付時間
-
-public:
-	PlayerAct act;
-	SkillRegister resister;
-	Array<int> comboStep;
-	Array<Array<Skill>> skillChain;
-	Array<Array<Skill>>* skill = &skillChain;
-	BuffManager* manager;
-	
-	SkillManager()
-	{
-		init();
-	}
-
-	void init() {
-		skillChain.push_back(resister.GetNearSkills());
-		skillChain.push_back(resister.GetHealSkills());
-		comboStep.assign(skillChain.size(), 0);
-	}
-
-
-	
-
-	void update()
-	{
-		
-	}
-
+	}	
 };
 
 class Player : public Entity
@@ -375,7 +301,7 @@ public:
 	bool move = true;
 	bool debuff = false;
 	AnimatedObject motion{ U"Assets/rutta_walkL.png",Vec2{120,160} };
-	SkillManager managerSkill;
+	SkillManager skillManager;
 
 
 	Player(EntityManager* manager, EntityState state, Vec2 pos, int lv)
@@ -390,6 +316,7 @@ public:
 
 	void update()
 	{
+		skillManager.update();
 		motion.updateAnimation();
 		const double deltaTime = Scene::DeltaTime();
 		t += deltaTime;
@@ -437,6 +364,11 @@ public:
 		motion.draw(0.75, { pos.x,pos.y - 50 });
 		area.draw();
 
+	}
+
+	SkillResult getSkillClicked(SkillType type)
+	{
+		return skillManager.returnSkillResult(type);
 	}
 
 	Circle getHitbox()const
@@ -883,7 +815,7 @@ public:
 		if (KeyP.down())changeScene(U"Practice");
 
 		timer += Scene::DeltaTime();
-		
+		HpProcess();
 		
 		if (not manager.player.isEmpty()) {
 			auto& player = *manager.player[0];
@@ -913,8 +845,22 @@ public:
 		}
 	}
 
-	void draw()const override {
+	void HpProcess()
+	{
+		SkillType type = UImanager.checkClicked();
 
+		SkillResult result;
+
+		if (type != SkillType::None)
+		{
+			result = manager.player[0]->getSkillClicked(type);
+			manager.enemy[0]->hp -= result.damage;
+		}
+	}
+
+
+	void draw()const override
+	{
 
 		{
 			const auto transformer = camera.createTransformer();
@@ -924,7 +870,8 @@ public:
 			Scene::SetBackground(Palette::Skyblue);	
 		}
 		UImanager.draw();
-
+		
+		Print(manager.enemy[0]->hp);
 	}
 };
 
@@ -960,276 +907,3 @@ void Main()
 		}
 	}
 }
-
-
-
-//class Attack
-//{
-//public:
-//
-//	Player* player;
-//	double t = 0;
-//	bool keepTime = false;
-//
-//	Array<double> time = Array<double>(100, 0);
-//	Array<bool> timeStart = Array<bool>(100, false);
-//	Array<bool> attackCheck = Array<bool>(100, true);
-//	
-//	RectF attack1 = returnRect(890, 360, 500, 600);
-//	RectF attack1_2 = returnRect(390, 360, 500, 600);
-//
-//	Circle attack2_1 = returnCircle(890, 210, 250);
-//	Circle attack2_2 = returnCircle(390, 210, 250);
-//	Circle attack2_3 = returnCircle(390, 510, 250);
-//	Circle attack2_4 = returnCircle(890, 510, 250);
-//	Circle attack2_5 = returnCircle(640, 360, 250);
-//
-//	RectF attack3_1 = returnRect(640, 110, 1000, 100);
-//	RectF attack3_2 = returnRect(640, 610, 1000, 100);
-//
-//	Circle attack3_3 = returnCircle(140, 360, 1000);	
-//
-//	Circle attack3_4 = returnCircle(1140, 360, 1000);
-//
-//	Polygon tr3_3;
-//	Polygon tr3_4;
-//
-//	RectF attack4_1 = returnRect(640, 210, 1000, 100);
-//	RectF attack4_2 = returnRect(640, 510, 1000, 100);
-//
-//	RectF attack5_1 = returnRect(640, 310, 1000, 100);
-//	RectF attack5_2 = returnRect(640, 410, 1000, 100);
-//
-//	Attack(Player* p)
-//		: player{p}
-//	{
-//		attack3_3.pieAsPolygon(75_deg, 30_deg);
-//		tr3_3 = attack3_3.pieAsPolygon(75_deg, 30_deg);
-//
-//		attack3_4.pieAsPolygon(255_deg, 30_deg);
-//		tr3_4 = attack3_4.pieAsPolygon(255_deg, 30_deg);  
-//    }
-//
-//	void closeTime(double t1, double t2, double t, int n) {
-//		if (t1 < t && t < t2) {
-//			reBool(timeStart[n]);
-//		}
-//	}
-//
-//	void checkRect(bool& b, RectF t) {
-//		b = false;
-//		if (Circle{ player->returnPos(),20}.intersects(t)) {
-//			player->damage();
-//		}
-//	}
-//
-//	void checkCircle(bool& b, Circle c) {
-//		b = false;
-//		if (Circle{ player->returnPos(),20 }.intersects(c)) {
-//			player->damage();
-//		}
-//	}
-//
-//	int returnHp() {
-//		return player->returnHP();
-//	}
-//
-//	void Action(int t) {
-//
-//		//攻撃判定追加(あとでめんどーになる)
-//		if (3 <= t && attackCheck[0]) {
-//			attackCheck[0] = false;
-//			if (Circle{ player->returnPos(),20 }.intersects(attack1)) {
-//				player->damage();
-//			}
-//			//checkRect(attackCheck[0], attack1);
-//		}
-//
-//		if (4 <= t && attackCheck[1]) {
-//			attackCheck[1] = false;
-//			if (Circle{ player->returnPos(),20 }.intersects(attack1_2)) {
-//				player->damage();
-//			}
-//		}
-//
-//		if (7 <= t && attackCheck[2]) {
-//			attackCheck[2] = false;
-//			if (Circle{ player->returnPos(),20 }.intersects(attack2_1)) {
-//				player->damage();
-//			}
-//		}
-//
-//		if (7.25 <= t && attackCheck[3]) {
-//			attackCheck[3] = false;
-//			if (Circle{ player->returnPos(),20 }.intersects(attack2_2)) {
-//				player->damage();
-//			}
-//		}
-//
-//		if (7.5 <= t && attackCheck[4]) {
-//			attackCheck[4] = false;
-//			if (Circle{ player->returnPos(),20 }.intersects(attack2_3)) {
-//				player->damage();
-//			}
-//		}
-//
-//		if (7.75 <= t && attackCheck[5]) {
-//			attackCheck[5] = false;
-//			if (Circle{ player->returnPos(),20 }.intersects(attack2_4)) {
-//				player->damage();
-//			}
-//		}
-//
-//		if (9 <= t && attackCheck[6]) {
-//			attackCheck[6] = false;
-//			if (Circle{ player->returnPos(),20 }.intersects(attack2_5)) {
-//				player->damage();
-//			}
-//		}
-//
-//		if (12 <= t && attackCheck[7]) {
-//
-//			attackCheck[7] = false;
-//
-//			if (Circle{ player->returnPos(),20 }.intersects(attack3_1)) {
-//				player->damage();
-//			}
-//
-//			if (Circle{ player->returnPos(),20 }.intersects(attack3_2)) {
-//				player->damage();
-//			}
-//
-//			if (Circle{ player->returnPos(),20 }.intersects(tr3_3)) {
-//				player->damage();
-//			}
-//
-//			if (Circle{ player->returnPos(),20 }.intersects(tr3_4)) {
-//				player->damage();
-//			}
-//		}
-//
-//
-//		if (13 <= t && attackCheck[11]) {
-//			attackCheck[11] = false;
-//			if (Circle{ player->returnPos(),20 }.intersects(attack4_1)) {
-//				player->damage();
-//			}
-//		}
-//
-//		if (13 <= t && attackCheck[12]) {
-//			attackCheck[12] = false;
-//			if (Circle{ player->returnPos(),20 }.intersects(attack4_2)) {
-//				player->damage();
-//			}
-//		}
-//
-//		if (15.5 <= t && attackCheck[13]) {
-//			attackCheck[13] = false;
-//			if (Circle{ player->returnPos(),20 }.intersects(attack5_1)) {
-//				player->damage();
-//			}
-//
-//			if (Circle{ player->returnPos(),20 }.intersects(attack5_2)) {
-//				player->damage();
-//			}
-//		}
-//
-//		if (15.5 <= t && attackCheck[14]) {
-//			attackCheck[14] = false;
-//			
-//		}		
-//	}
-//
-//	void chengeTime() {
-//
-//		closeTime(0, 3, t, 0);
-//
-//		closeTime(1, 4, t, 1);
-//
-//		closeTime(4, 7, t, 2);
-//
-//		closeTime(4.25, 7.25, t, 3);
-//
-//		closeTime(4.5, 7.5, t, 4);
-//
-//		closeTime(4.75, 7.75  , t, 5);
-// 
-//		closeTime(6, 9, t, 6);
-//
-//		closeTime(9, 12, t, 7);
-//
-//		closeTime(10, 13, t, 8);
-//
-//		closeTime(12.5, 15.5, t, 9);
-//		
-//	}
-//
-//	int returnT() {
-//		return t;
-//	}
-// 
-//	void update() {
-//		const double deltaTime = Scene::DeltaTime();
-//		if (!keepTime) {			
-//			t += deltaTime;
-//		}
-//
-//		for (int k = 0; k < 10; k++) {
-//			if (timeStart[k] == true) {
-//				time[k] += deltaTime;
-//			}
-//		}
-//
-//		Action(t);
-//		chengeTime();
-//	}
-//
-//
-//	void draw()const {
-//
-//		//攻撃描画追加(あとでめんどーになる)
-//		if (0 < t && t < 3) {
-//			drawDonut(player->pos.x, player->pos.y, time[0], 300, 200);
-//		}
-//
-//		if (1 < t && t < 4) {
-//			drawRect(390, 360, time[1], 500, 600);
-//		}
-//
-//		if (4 < t && t < 7) {
-//			drawCircle(890, 210, time[2], 250);
-//		}
-//
-//		if (4.25 < t && t < 7.25) {
-//			drawCircle(390, 210, time[3], 250);
-//		}
-//
-//		if (4.5 < t && t < 7.5) {
-//			drawCircle(390, 510, time[4], 250);
-//		}
-//
-//		if (4.75 < t && t < 7.75) {
-//			drawCircle(890, 510, time[5], 250);
-//		}
-//		if (6 < t && t < 9) {
-//			drawCircle(640, 360, time[6], 250);
-//		}
-//		if (9 < t && t < 12) {
-//			drawRect(640, 110, time[7], 1000, 100);
-//			drawRect(640, 610, time[7], 1000, 100);
-//			drawBlethRight(140, 360, time[7], 1000);
-//			drawBlethLeght(1140, 360, time[7], 1000);
-//		}
-//		if (10 < t && t < 13) {
-//			drawRect(640, 210, time[8], 1000, 100);
-//			drawRect(640, 510, time[8], 1000, 100);
-//		}
-//		if (12.5 < t && t < 15.5) {
-//			drawRect(640, 310, time[9], 1000, 100);
-//			drawRect(640, 410, time[9], 1000, 100);
-//		}
-//
-//	}
-//
-//
-//};

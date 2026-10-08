@@ -136,6 +136,18 @@
     <Filter Include="Resource Files\engine\font\min">
       <UniqueIdentifier>{1b103960-f11a-4515-b4f1-f59333ce00d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{8a568495-1777-461f-9a17-edf7e2984efb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Skill">
+      <UniqueIdentifier>{d7c83fa6-a7a5-48e2-97d8-e2389837513a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity">
+      <UniqueIdentifier>{3be8c3fa-c076-49e6-9bf1-ad6e9f5347bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scene">
+      <UniqueIdentifier>{a29ec375-c5e9-412e-b849-cad894ebb667}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -154,9 +166,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerUi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="selectScene.cpp">
@@ -189,7 +198,19 @@
     <ClCompile Include="ソース.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SkillType.cpp">
+    <ClCompile Include="SkillManager.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DamageChecker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CoolTime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SkillValue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SkillObserber.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -857,22 +878,13 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DpsUi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="effect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerUi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="selectScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Skill.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tutorial.h">
@@ -890,10 +902,31 @@
     <ClInclude Include="Buff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UIManager.h">
+    <ClInclude Include="DamageChecker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
     <ClInclude Include="SkillUI.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SkillID.h">
+      <Filter>Header Files\Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="SkillManager.h">
+      <Filter>Header Files\Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="Skill.h">
+      <Filter>Header Files\Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="CoolTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SkillValue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SkillObserber.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

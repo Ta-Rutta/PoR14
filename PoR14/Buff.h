@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 enum class BuffType
 {
 	Attack,//ダメージ増加
@@ -14,8 +15,8 @@ struct Buff
 	String name;//バフの名前
 	double duration;//効果時間
 	double value;//バフの効果値
+	bool active = false;	
 	
-
 	Buff(BuffType t,String name , float dur, float val)
 		: type(t),name(name), duration(dur), value(val)
 	{
